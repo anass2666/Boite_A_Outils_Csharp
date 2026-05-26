@@ -1,0 +1,202 @@
+mkdir DS_Examen
+cd DS_Examen
+dotnet new sln -n Examen
+dotnet new console -n App
+dotnet new mstest -n Tests
+dotnet sln add App/App.csproj
+dotnet sln add Tests/Tests.csproj
+dotnet add Tests/Tests.csproj reference App/App.csproj
+
+------------------------------------------------------------
+using System;
+using System.Collections.Generic; // Obligatoire si tu utilises des Listes
+
+namespace App
+{
+    // Tes classes iront ici
+
+    public class Program
+    {
+        public static void Main(string[] args) { } 
+    }
+}
+---------------------------------------------------------------------
+// Vérifier un résultat précis ou un calcul
+Assert.AreEqual(resultatAttendu, resultatObtenu);
+
+// Vérifier si une condition est Vraie
+Assert.IsTrue(maCondition);
+
+// Vérifier si une condition est Fausse
+Assert.IsFalse(maCondition);
+
+// Vérifier qu'une erreur est bien déclenchée
+Assert.ThrowsException<ArgumentException>(() => maClasse.MaFonctionInterdite());
+--------------------------------------------------------------------------
+SITUATION 1 : La Classe Basique (Propriétés + Constructeur)
+Si le prof demande de modéliser une Personne, un Livre, un Véhicule...
+
+Dans App/Program.cs :
+
+C#
+public class Personne
+{
+    public string Nom { get; set; }
+    public int Age { get; set; }
+
+    public Personne(string nomPersonne, int agePersonne)
+    {
+        Nom = nomPersonne;
+        Age = agePersonne;
+    }
+}
+Dans Tests/UnitTest1.cs :
+
+C#
+[TestMethod]
+public void TestCreationPersonne()
+{
+    var p = new Personne("Sokol", 20);
+    Assert.AreEqual("Sokol", p.Nom);
+    Assert.AreEqual(20, p.Age);
+}
+-------------------------------------------------------------------------------
+situation 3
+public class Statistiques
+{
+    public int CalculerSomme(int[] nombres)
+    {
+        if (nombres.Length == 0) throw new ArgumentException("Tableau vide");
+
+        int somme = 0;
+        for (int i = 0; i < nombres.Length; i++)
+        {
+            somme = somme + nombres[i];
+        }
+        return somme;
+    }
+}
+Dans Tests/UnitTest1.cs :
+
+C#
+[TestMethod]
+public void TestCalculTableau()
+{
+    var stats = new Statistiques();
+    int[] mesNombres = { 10, 5, 5 };
+    Assert.AreEqual(20, stats.CalculerSomme(mesNombres));
+}
+-----------------------------------------------------------------------------------------------
+SITUATION 2 : L'Exception (Bloquer une action interdite)
+Si le prof demande de gérer un compte bancaire, une limite d'âge, un prix négatif...
+
+Dans App/Program.cs :
+
+C#
+public class Compte
+{
+    public int Solde { get; set; }
+    
+    public Compte() { Solde = 100; }
+
+    public void Retirer(int montant)
+    {
+        if (montant > Solde)
+        {
+            throw new ArgumentException("Fonds insuffisants");
+        }
+        Solde = Solde - montant;
+    }
+}
+Dans Tests/UnitTest1.cs :
+
+C#
+[TestMethod]
+public void TestExceptionRetrait()
+
+{
+    var c = new Compte(); // Solde à 100
+    Assert.ThrowsException<ArgumentException>(() => c.Retirer(500));
+}
+---------------------------------------------------------------------------------------------
+SITUATION 4 : La Liste (Collection et Booléen)
+Si le prof demande de gérer un inventaire, un panier d'achat, ajouter/chercher des éléments...
+
+Dans App/Program.cs :
+
+C#
+public class Boutique
+{
+    public List<string> Inventaire { get; set; }
+
+    public Boutique()
+    {
+        Inventaire = new List<string>(); // Toujours initialiser la liste !
+    }
+
+    public void Ajouter(string produit)
+    {
+        Inventaire.Add(produit);
+    }
+
+    public bool EstDisponible(string produit)
+    {
+        return Inventaire.Contains(produit);
+    }
+}
+Dans Tests/UnitTest1.cs :
+
+C#
+[TestMethod]
+public void TestGestionListe()
+{
+    var shop = new Boutique();
+    shop.Ajouter("Pomme");
+
+    // Vérifie la taille de la liste
+    Assert.AreEqual(1, shop.Inventaire.Count);
+    
+    // Vérifie le booléen (si c'est bien dedans)
+    Assert.IsTrue(shop.EstDisponible("Pomme"));
+    Assert.IsFalse(shop.EstDisponible("Poire"));
+}
+----------------------------------------------------------------------
+5. Les Commandes de Sauvegarde (Fin d'examen)
+Pour valider ton travail.
+
+Bash
+git init
+git add .
+git commit -m "Fin de l'examen"
+
+# 📚 Mémo des TDs : Où chercher selon la question du sujet
+
+Si tu as un trou de mémoire pendant l'examen, ne perds pas de temps à fouiller partout. Identifie ce que le prof demande, et ouvre directement la correction du TD correspondant pour adapter le code.
+
+### 🏗️ SITUATION 1 : Le prof demande de créer un objet avec des caractéristiques
+* **L'indice :** Mots-clés comme "Modéliser", "Classe", "Propriétés", "Constructeur".
+* **Où regarder :** **TD8 - Exercice 2 (La classe Personne)**.
+* **Ce que tu y trouveras :** Le squelette parfait d'une classe complète avec l'initialisation du constructeur et la syntaxe `public string Nom { get; set; }`. Tu n'as plus qu'à changer les noms.
+
+### 🛑 SITUATION 2 : Le prof demande de bloquer une valeur interdite
+* **L'indice :** Mots-clés comme "Interdire", "Exception", "Vérifier", "Invalide".
+* **Où regarder :** **TD9 - Exercice 4 (L'aire de l'Octogone)**.
+* **Ce que tu y trouveras :** La logique exacte pour écrire ton `if (valeur < 0)` suivi du `throw new ArgumentException(...)`. Regarde aussi les tests unitaires de ce TD pour voir comment écrire le `Assert.ThrowsException`.
+
+### 🧮 SITUATION 3 : Le prof demande un calcul brut
+* **L'indice :** Mots-clés comme "Calculer", "Convertir", "Retourner le résultat".
+* **Où regarder :** **TD2 - Exercice 2 (ConvertHMToMinutes)** ou **TD4 (ConvertMToHM)**.
+* **Ce que tu y trouveras :** La structure d'une méthode simple qui prend des nombres en entrée (`int`, `double`), fait son opération mathématique, et renvoie la réponse avec `return`. Idéal à tester avec `Assert.AreEqual`.
+
+### 🔄 SITUATION 4 : Le prof demande un calcul répétitif (Boucles)
+* **L'indice :** Mots-clés comme "Chaque année", "Pour chaque", "Simuler X tours".
+* **Où regarder :** **TD1 - Exercice 3 (Le brouzouf de Suzon)**.
+* **Ce que tu y trouveras :** L'utilisation classique d'une boucle `for` pour faire évoluer une variable (comme un solde bancaire) au fil du temps.
+
+### 🎲 SITUATION 5 : Le prof demande de manipuler un tableau ou de l'aléatoire
+* **L'indice :** Mots-clés comme "Tirer au sort", "Tableau de mots", "Hasard".
+* **Où regarder :** **TD5 - Début du TD (RetournerAnimal / RetournerAdjectif)**.
+* **Ce que tu y trouveras :** Comment déclarer un tableau fixe (`string[] = { "mot1", "mot2" }`) et comment utiliser la classe `Random` pour choisir un élément dedans.
+
+---
+💡 **RAPPEL SÉCURITÉ :** Le but n'est pas de copier bêtement. Tu prends la structure du TD, tu effaces les noms (ex: `Personne`, `Age`), et tu les remplaces par ceux du sujet (ex: `Livre`, `Prix`). Un code bien adapté vaut tous les points de l'exercice !
